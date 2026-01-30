@@ -1,0 +1,223 @@
+#!/bin/sh
+
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+
+##### Nord Color Palette #####
+# Polar Night
+NORD0=0xff2e3440
+NORD1=0xff3b4252
+NORD2=0xff434c5e
+NORD3=0xff4c566a
+# Snow Storm
+NORD4=0xffd8dee9
+NORD5=0xffe5e9f0
+NORD6=0xffeceff4
+# Frost
+NORD7=0xff8fbcbb
+NORD8=0xff88c0d0
+NORD9=0xff81a1c1
+NORD10=0xff5e81ac
+# Aurora
+NORD11=0xffbf616a
+NORD12=0xffd08770
+NORD13=0xffebcb8b
+NORD14=0xffa3be8c
+NORD15=0xffb48ead
+
+##### Bar Appearance #####
+sketchybar --bar position=top \
+                 height=32 \
+                 blur_radius=30 \
+                 color=$NORD0 \
+                 border_width=0 \
+                 shadow=on \
+                 y_offset=0 \
+                 display=all \
+                 sticky=on
+
+##### Changing Defaults #####
+default=(
+  padding_left=4
+  padding_right=4
+  icon.font="Hack Nerd Font:Bold:14.0"
+  label.font="Hack Nerd Font:Bold:12.0"
+  icon.color=$NORD4
+  label.color=$NORD4
+  icon.padding_left=2
+  icon.padding_right=2
+  label.padding_left=2
+  label.padding_right=2
+)
+sketchybar --default "${default[@]}"
+
+##### Register custom event for AeroSpace #####
+sketchybar --add event aerospace_workspace_change
+
+##### Apple Menu #####
+sketchybar --add item apple left \
+           --set apple icon=󰀵 \
+                       icon.font="Hack Nerd Font:Bold:20.0" \
+                       icon.color=$NORD4 \
+                       icon.padding_left=8 \
+                       label.drawing=off \
+                       click_script="sketchybar --set apple popup.drawing=toggle" \
+                       popup.background.color=$NORD1 \
+                       popup.background.corner_radius=8 \
+                       popup.background.border_width=1 \
+                       popup.background.border_color=$NORD3
+
+# Apple popup items
+sketchybar --add item apple.macos popup.apple \
+           --set apple.macos icon= \
+                             icon.color=$NORD8 \
+                             label.color=$NORD4 \
+                             background.drawing=off \
+                             click_script="open 'x-apple.systempreferences:'"
+
+sketchybar --add item apple.uptime popup.apple \
+           --set apple.uptime icon=󰅐 \
+                              icon.color=$NORD14 \
+                              label.color=$NORD4 \
+                              background.drawing=off
+
+sketchybar --add item apple.disk popup.apple \
+           --set apple.disk icon=󰋊 \
+                            icon.color=$NORD12 \
+                            label.color=$NORD4 \
+                            background.drawing=off \
+                            click_script="open /System/Applications/Utilities/Disk\\ Utility.app"
+
+sketchybar --add item apple.ip popup.apple \
+           --set apple.ip icon=󰈀 \
+                          icon.color=$NORD7 \
+                          label.color=$NORD4 \
+                          background.drawing=off \
+                          click_script="open 'x-apple.systempreferences:com.apple.Network-Settings.extension'"
+
+# Update apple info on click
+sketchybar --set apple script="$PLUGIN_DIR/apple.sh" \
+           --subscribe apple mouse.clicked
+
+##### Active Workspace Indicator #####
+sketchybar --add item workspace left \
+           --set workspace \
+                 icon.font="Hack Nerd Font:Bold:12.0" \
+                 icon.color=$NORD0 \
+                 icon.padding_left=8 \
+                 icon.padding_right=8 \
+                 background.color=$NORD8 \
+                 background.corner_radius=4 \
+                 background.height=20 \
+                 background.drawing=on \
+                 label.drawing=off \
+                 script="$PLUGIN_DIR/workspace.sh" \
+           --subscribe workspace aerospace_workspace_change
+
+##### Adding Left Items #####
+sketchybar --add item chevron left \
+           --set chevron icon= \
+                         icon.color=$NORD3 \
+                         label.drawing=off \
+           --add item front_app left \
+           --set front_app icon.drawing=off \
+                           label.color=$NORD8 \
+                           script="$PLUGIN_DIR/front_app.sh" \
+           --subscribe front_app front_app_switched
+
+# Media (after front_app)
+sketchybar --add item media left \
+           --set media update_freq=1 \
+                       icon.font="Hack Nerd Font:Bold:12.0" \
+                       icon.color=$NORD14 \
+                       label.font="Hack Nerd Font:Regular:11.0" \
+                       label.color=$NORD4 \
+                       label.max_chars=25 \
+                       scroll_texts=on \
+                       drawing=off \
+                       script="$PLUGIN_DIR/media.sh" \
+                       click_script="osascript -e 'tell application \"Spotify\" to playpause' 2>/dev/null || osascript -e 'tell application \"Music\" to playpause'"
+
+# CPU (left)
+sketchybar --add item cpu left \
+           --set cpu update_freq=3 \
+                     icon=󰻠 \
+                     icon.color=$NORD12 \
+                     script="$PLUGIN_DIR/cpu.sh"
+
+# Memory (left)
+sketchybar --add item memory left \
+           --set memory update_freq=5 \
+                        icon=󰍛 \
+                        icon.color=$NORD13 \
+                        script="$PLUGIN_DIR/memory.sh"
+
+##### Adding Right Items #####
+# Order (edge to center): clock → battery → volume → wifi → vpn → network → memory → cpu
+
+# Clock with calendar popup
+sketchybar --add item clock right \
+           --set clock update_freq=10 \
+                       icon= \
+                       icon.color=$NORD9 \
+                       label.font="JetBrainsMono Nerd Font:Regular:12.0" \
+                       script="$PLUGIN_DIR/clock.sh" \
+                       click_script="sketchybar --set clock popup.drawing=toggle" \
+                       popup.background.color=$NORD1 \
+                       popup.background.corner_radius=8 \
+                       popup.background.border_width=1 \
+                       popup.background.border_color=$NORD3 \
+           --subscribe clock mouse.clicked
+
+# Calendar popup content
+sketchybar --add item calendar.head popup.clock \
+           --set calendar.head icon="$(date '+%B %Y')" \
+                               icon.font="JetBrainsMono Nerd Font:Bold:13.0" \
+                               icon.color=$NORD8 \
+                               label.drawing=off \
+                               background.drawing=off
+
+sketchybar --add item calendar.body popup.clock \
+           --set calendar.body icon="$(cal | tail -n +2)" \
+                               icon.font="JetBrainsMono Nerd Font:Regular:11.0" \
+                               icon.color=$NORD4 \
+                               label.drawing=off \
+                               background.drawing=off
+
+# Battery
+sketchybar --add item battery right \
+           --set battery update_freq=120 \
+                         icon.color=$NORD14 \
+                         script="$PLUGIN_DIR/battery.sh" \
+           --subscribe battery system_woke power_source_change
+
+# Volume
+sketchybar --add item volume right \
+           --set volume icon.color=$NORD15 \
+                        script="$PLUGIN_DIR/volume.sh" \
+           --subscribe volume volume_change
+
+# Wifi
+sketchybar --add item wifi right \
+           --set wifi update_freq=5 \
+                      icon=󰖩 \
+                      icon.color=$NORD7 \
+                      script="$PLUGIN_DIR/wifi.sh"
+
+# VPN
+sketchybar --add item vpn right \
+           --set vpn update_freq=5 \
+                     icon=󰦞 \
+                     icon.color=$NORD3 \
+                     label.drawing=off \
+                     script="$PLUGIN_DIR/vpn.sh"
+
+# Network speed
+sketchybar --add item network right \
+           --set network update_freq=2 \
+                         icon=󰛳 \
+                         icon.color=$NORD10 \
+                         label.font="Hack Nerd Font:Regular:10.0" \
+                         script="$PLUGIN_DIR/network.sh"
+
+##### Force all scripts to run the first time #####
+sketchybar --update

@@ -1,0 +1,50 @@
+# looking
+macos-titlebar-style = hidden
+
+clipboard-read = allow
+clipboard-write = allow
+copy-on-select = true
+clipboard-trim-trailing-spaces = true
+
+# window
+window-width = 100
+window-height = 30
+window-padding-x = 4
+initial-window = true
+resize-overlay = never
+
+background = #15191E
+foreground = #dbdbdb
+selection-background = #bad5fb
+selection-foreground = #000000
+cursor-color = #fefefe
+cursor-text = #000000
+
+palette = 0=#14181d
+palette = 1=#a64431
+palette = 2=#57bf37
+palette = 3=#c6c43f
+palette = 4=#2d42c0
+palette = 5=#b148b8
+palette = 6=#58c2c5
+palette = 7=#c7c7c7
+
+palette = 8=#676767
+palette = 9=#cf7e77
+palette = 10=#81e397
+palette = 11=#eae14a
+palette = 12=#a7aaec
+palette = 13=#d382db
+palette = 14=#8ef9fd
+palette = 15=#fefefe
+
+font-size = 13
+font-style = medium
+bold-is-bright = true
+font-family = "JetBrainsMono Nerd Font"
+background-opacity = 0.97
+background-blur = true
+
+keybind = shift+enter=text:\n
+macos-option-as-alt = left
+
