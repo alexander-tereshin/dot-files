@@ -138,3 +138,5 @@ alias cat="bat --style=auto"
 export PATH="/opt/homebrew/sbin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+alias brewup='brew update && brew upgrade && brew upgrade --cask --greedy && brew cleanup --prune=all'
+
